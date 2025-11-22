@@ -8,7 +8,7 @@ pipeline {
 
     environment {
         SONAR_HOST = "http://192.168.1.6:9000"
-        SONAR_TOKEN = credentials('sonarqube-token')   // 🔥 utilise ton ID ici !
+        SONAR_TOKEN = credentials('sonarqube-token')
     }
 
     stages {
@@ -42,7 +42,7 @@ pipeline {
                         mvn sonar:sonar \
                         -Dsonar.projectKey=devops \
                         -Dsonar.host.url=${SONAR_HOST} \
-                        -Dsonar.login=${SONAR_TOKEN}
+                        -Dsonar.login=$SONAR_TOKEN
                     """
                 }
             }
