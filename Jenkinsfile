@@ -7,42 +7,54 @@ pipeline {
     }
 
     environment {
-        SONAR_TOKEN = credentials('sonar-token')   // ID du token ajouté dans Jenkins
+        SONAR_URL = "http://192.168.1.6:9000"
+        SONAR_TOKEN = "jenkins-token"
     }
 
     stages {
 
+        /* -------------------- 1) CHECKOUT -------------------- */
         stage('Checkout') {
             steps {
+                echo "📥 Récupération du code depuis GitHub..."
                 git branch: 'main', url: 'https://github.com/yasmine289/devops.git'
             }
         }
 
+        /* -------------------- 2) BUILD -------------------- */
         stage('Build') {
             steps {
-                sh 'mvn clean install'
+                echo "🔧 Compilation et installation des dépendances..."
+                sh "mvn clean install -DskipTests"
             }
         }
 
+        /* -------------------- 3) TESTS -------------------- */
         stage('Tests') {
             steps {
-                sh 'mvn test'
+                echo "🧪 Exécution des tests JUnit..."
+                sh "mvn test"
             }
         }
 
-        stage('SAST - SonarQube Analysis') {
+        /* -------------------- 4) SAST (SonarQube) -------------------- */
+        stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv('sonar') {       // ⚠️ le nom EXACT de ton Sonar dans Jenkins
+                echo "🔍 Analyse du code avec SonarQube..."
+
+                withSonarQubeEnv('sonar') {
                     sh """
                         mvn sonar:sonar \
                           -Dsonar.projectKey=devops \
-                          -Dsonar.login=$SONAR_TOKEN
+                          -Dsonar.host.url=${SONAR_URL} \
+                          -Dsonar.login=${SONAR_TOKEN}
                     """
                 }
             }
         }
 
-        stage("Quality Gate") {
+        /* -------------------- 5) QUALITY GATE -------------------- */
+        stage('Quality Gate') {
             steps {
                 timeout(time: 3, unit: 'MINUTES') {
                     waitForQualityGate abortPipeline: true
@@ -50,11 +62,14 @@ pipeline {
             }
         }
 
-        stage('Déploiement') {
+        /* -------------------- 6) DEPLOYMENT -------------------- */
+        stage('Deployment') {
             steps {
-                echo "Déploiement sur Tomcat (à compléter selon ton besoin)"
-                // Exemple :
-                // sh 'cp target/*.war /opt/tomcat/webapps/'
+                echo "🚀 Déploiement du fichier WAR sur Tomcat..."
+
+                sh """
+                    cp target/*.war /opt/tomcat/webapps/devops.war
+                """
             }
         }
     }
