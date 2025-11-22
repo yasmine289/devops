@@ -6,6 +6,10 @@ pipeline {
         jdk 'JAVA17'
     }
 
+    environment {
+        SONAR_TOKEN = credentials('sonar-token')   // ID du token ajouté dans Jenkins
+    }
+
     stages {
 
         stage('Checkout') {
@@ -16,7 +20,7 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh 'mvn clean package'
+                sh 'mvn clean install'
             }
         }
 
@@ -26,18 +30,14 @@ pipeline {
             }
         }
 
-        stage('SonarQube Analysis') {
-            environment {
-                scannerHome = tool 'sonar-scanner'
-            }
+        stage('SAST - SonarQube Analysis') {
             steps {
-                withSonarQubeEnv('SonarQubeLocal') {
-                    sh '''
-                       ${scannerHome}/bin/sonar-scanner \
-                        -Dsonar.projectKey=devops \
-                        -Dsonar.sources=src \
-                        -Dsonar.java.binaries=target
-                    '''
+                withSonarQubeEnv('sonar') {       // ⚠️ le nom EXACT de ton Sonar dans Jenkins
+                    sh """
+                        mvn sonar:sonar \
+                          -Dsonar.projectKey=devops \
+                          -Dsonar.login=$SONAR_TOKEN
+                    """
                 }
             }
         }
@@ -47,6 +47,14 @@ pipeline {
                 timeout(time: 3, unit: 'MINUTES') {
                     waitForQualityGate abortPipeline: true
                 }
+            }
+        }
+
+        stage('Déploiement') {
+            steps {
+                echo "Déploiement sur Tomcat (à compléter selon ton besoin)"
+                // Exemple :
+                // sh 'cp target/*.war /opt/tomcat/webapps/'
             }
         }
     }
