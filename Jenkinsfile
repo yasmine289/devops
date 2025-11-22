@@ -15,28 +15,24 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                echo "📥 Récupération du code depuis GitHub..."
                 git branch: 'main', url: 'https://github.com/yasmine289/devops.git'
             }
         }
 
         stage('Build') {
             steps {
-                echo "🔧 Build Maven..."
                 sh "mvn clean install -DskipTests"
             }
         }
 
         stage('Tests') {
             steps {
-                echo "🧪 Exécution des tests unitaires..."
                 sh "mvn test"
             }
         }
 
         stage('SAST - SonarQube') {
             steps {
-                echo "🔎 Analyse SAST avec SonarQube..."
                 withSonarQubeEnv('sonar') {
                     sh """
                         mvn sonar:sonar \
