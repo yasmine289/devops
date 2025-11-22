@@ -32,17 +32,18 @@ pipeline {
         }
 
         stage('SAST - SonarQube') {
-            steps {
-                withSonarQubeEnv('sonar') {
-                    sh """
-                        mvn sonar:sonar \
-                        -Dsonar.projectKey=devops \
-                        -Dsonar.host.url=${SONAR_HOST} \
-                        -Dsonar.login=$SONAR_TOKEN
-                    """
-                }
-            }
+    steps {
+        echo "🔎 Analyse SAST avec SonarQube..."
+        withSonarQubeEnv('sonar') {
+            sh """
+                mvn sonar:sonar \
+                -Dsonar.projectKey=devops \
+                -Dsonar.host.url=${SONAR_HOST} \
+                -Dsonar.login=${SONAR_TOKEN}
+            """
         }
+    }
+}
 
         stage("Quality Gate") {
             steps {
