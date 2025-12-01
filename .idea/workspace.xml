@@ -12,6 +12,13 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Jsp File" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
@@ -59,6 +66,9 @@
       <workItem from="1763974243549" duration="1655000" />
       <workItem from="1763978342209" duration="591000" />
       <workItem from="1764069635980" duration="612000" />
+      <workItem from="1764080929189" duration="2865000" />
+      <workItem from="1764181082285" duration="23000" />
+      <workItem from="1764578540879" duration="615000" />
     </task>
     <servers />
   </component>
